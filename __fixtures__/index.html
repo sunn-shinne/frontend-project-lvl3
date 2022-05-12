@@ -1,0 +1,23 @@
+<div class="container-fluid bg-dark p-5">
+  <div class="row">
+    <div class="col-mb-10 col-lg-8 mx-auto text-white">
+      <h1 class="display-3">RSS агрегатор</h1>
+      <form class="rss-form text-body">
+        <div class="row">
+          <div class="col">
+            <div class="form-floating">
+              <input type="text" class="form-control" id="rss-input" placeholder="http://example.com" autocomplete="off"
+                autofocus>
+              <label for="rss-input">Ссылка RSS</label>
+            </div>
+          </div>
+          <div class="col-auto">
+            <button type="submit" class="btn btn-primary h-100">Добавить</button>
+          </div>
+        </div>
+      </form>
+      <p class="mt-2 mb-0 text-muted">Пример: https://ru.hexlet.io/lessons.rss</p>
+      <p class="feedback m-0 position-absolute small text-success" data-testid="feedback"></p>
+    </div>
+  </div>
+</div>

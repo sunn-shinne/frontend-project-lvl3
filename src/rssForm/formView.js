@@ -11,12 +11,14 @@ const handleProcess = (processState, errors, elements, i18n) => {
     case 'success':
       submitBtn.disabled = false;
       feedback.textContent = i18n.t('rss_form.success_message');
+      feedback.classList.remove('text-danger');
       rssInput.value = '';
       rssInput.focus();
       break;
     case 'failed':
       submitBtn.disabled = false;
       feedback.textContent = errors;
+      feedback.classList.add('text-danger');
       break;
     default:
       throw new Error('unexpected process state');
@@ -24,17 +26,15 @@ const handleProcess = (processState, errors, elements, i18n) => {
 };
 
 const handleIsValid = (isValid, elements) => {
-  const { rssInput, feedback } = elements;
+  const { rssInput } = elements;
   if (isValid) {
     rssInput.classList.remove('border', 'border-danger', 'is-invalid');
-    feedback.classList.remove('text-danger');
   } else {
     rssInput.classList.add('border', 'border-danger', 'is-invalid');
-    feedback.classList.add('text-danger');
   }
 };
 
-const genirateFormView = (formState, elements, i18n) => (
+const genirateFormWatcher = (formState, elements, i18n) => (
   onChange(formState, (path, value) => {
     switch (path) {
       case 'processState':
@@ -48,4 +48,4 @@ const genirateFormView = (formState, elements, i18n) => (
   })
 );
 
-export default genirateFormView;
+export default genirateFormWatcher;

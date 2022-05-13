@@ -5,10 +5,15 @@ export default (i18n) => {
     formState: {
       isValid: true,
       errors: [],
-      rssUrl: '',
+      inputValue: '',
       processState: null,
     },
-    feeds: [],
+    feedsData: {
+      urls: [],
+      feeds: [],
+      posts: [],
+      checkedPostsId: [],
+    },
   };
 
   rssForm(state, i18n);

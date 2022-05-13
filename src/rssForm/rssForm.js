@@ -1,14 +1,21 @@
-import { string } from 'yup';
+import { string, setLocale } from 'yup';
 import genirateFormView from './rssFormView.js';
 
-const createRssSchema = (arr) => string()
-  .url('Ссылка должна быть валидным URL')
-  .notOneOf(arr, 'RSS уже существует')
-  .required('Это обязательное поле');
+setLocale({
+  mixed: {
+    notOneOf: () => ({ key: 'rss_form.error_messages.already_exists' }),
+    required: () => ({ key: 'rss_form.error_messages.field_required' }),
+  },
+  string: {
+    url: () => ({ key: 'rss_form.error_messages.not_valid_url' }),
+  },
+});
+
+const createRssSchema = (arr) => string().url().notOneOf(arr).required();
 
 const validate = (value, schema) => schema.validate(value);
 
-export default ({ formState, feeds }) => {
+export default ({ formState, feeds }, i18n) => {
   const rssInput = document.querySelector('#rss-input');
   const feedback = document.querySelector('.feedback');
   const form = document.querySelector('.rss-form');
@@ -20,7 +27,7 @@ export default ({ formState, feeds }) => {
     submitBtn,
   };
 
-  const watchedFormState = genirateFormView(formState, elements);
+  const watchedFormState = genirateFormView(formState, elements, i18n);
 
   rssInput.addEventListener('change', (e) => {
     watchedFormState.processState = 'filling';
@@ -30,15 +37,17 @@ export default ({ formState, feeds }) => {
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     watchedFormState.processState = 'sending';
-    validate(watchedFormState.rssUrl, createRssSchema(feeds))
+    const schema = createRssSchema(feeds);
+
+    validate(watchedFormState.rssUrl, schema)
       .then(() => {
         feeds.push(formState.rssUrl);
         watchedFormState.errors = [];
         watchedFormState.isValid = true;
         watchedFormState.processState = 'success';
       })
-      .catch((data) => {
-        watchedFormState.errors = data.errors;
+      .catch((res) => {
+        watchedFormState.errors = res.errors.map((err) => i18n.t(err.key));
         watchedFormState.isValid = false;
         watchedFormState.processState = 'failed';
       });

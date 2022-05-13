@@ -1,6 +1,6 @@
 import onChange from 'on-change';
 
-const handleProcess = (processState, errors, elements) => {
+const handleProcess = (processState, errors, elements, i18n) => {
   const { rssInput, feedback, submitBtn } = elements;
   switch (processState) {
     case 'filling':
@@ -10,7 +10,7 @@ const handleProcess = (processState, errors, elements) => {
       break;
     case 'success':
       submitBtn.disabled = false;
-      feedback.textContent = 'RSS успешно загружен';
+      feedback.textContent = i18n.t('rss_form.success_message');
       rssInput.value = '';
       rssInput.focus();
       break;
@@ -34,11 +34,11 @@ const handleIsValid = (isValid, elements) => {
   }
 };
 
-const genirateFormView = (formState, elements) => (
+const genirateFormView = (formState, elements, i18n) => (
   onChange(formState, (path, value) => {
     switch (path) {
       case 'processState':
-        handleProcess(value, formState.errors, elements);
+        handleProcess(value, formState.errors, elements, i18n);
         break;
       case 'isValid':
         handleIsValid(value, elements);

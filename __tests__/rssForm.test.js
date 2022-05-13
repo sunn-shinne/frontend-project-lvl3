@@ -7,10 +7,11 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import nock from 'nock';
 import init from '../src/init.js';
+import i18nextCreateInstance from '../lib/i18next.js';
 
 const { screen, waitFor } = testingLibrary;
-// const userEvent = testingLibraryUserEvent.default;
 const user = userEvent.setup();
+const i18nextInstance = await i18nextCreateInstance();
 
 nock.disableNetConnect();
 
@@ -23,7 +24,7 @@ beforeEach(() => {
   const pathToFixture = path.join(__dirname, '..', '__fixtures__', 'index.html');
   const initHtml = fs.readFileSync(pathToFixture).toString();
   document.body.innerHTML = initHtml;
-  init();
+  init(i18nextInstance);
 
   elements = {
     submitBtn: screen.getByText(/Добавить/),
@@ -55,6 +56,7 @@ test('validation works', async () => {
   expect(elements.feedbackContainer).toHaveClass('text-danger');
 
   await user.type(elements.rssInput, 'Petya');
+  console.log(elements.rssInput.value);
   await user.click(elements.submitBtn);
 
   expect(elements.submitBtn).toBeEnabled();

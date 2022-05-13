@@ -1,6 +1,6 @@
 import rssForm from './rssForm/rssForm.js';
 
-export default () => {
+export default (i18n) => {
   const state = {
     formState: {
       isValid: true,
@@ -11,5 +11,5 @@ export default () => {
     feeds: [],
   };
 
-  rssForm(state);
+  rssForm(state, i18n);
 };

@@ -21,6 +21,9 @@
   "homepage": "https://github.com/sunn-shinne/frontend-project-lvl3#readme",
   "jest": {
     "verbose": true,
+    "setupFilesAfterEnv": [
+      "./setup.js"
+    ],
     "testEnvironment": "jsdom",
     "testEnvironmentOptions": {
       "url": "http://localhost/"

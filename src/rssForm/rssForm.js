@@ -27,51 +27,52 @@ export default (state, i18n) => {
   const feedback = document.querySelector('.feedback');
   const form = document.querySelector('.rss-form');
   const submitBtn = document.querySelector('form button');
-  const feedsBlock = document.querySelector('.feeds');
-  const postsBlock = document.querySelector('.posts');
+  const feedsRoot = document.querySelector('.feeds');
+  const postsRoot = document.querySelector('.posts');
   const elements = {
     rssInput,
     feedback,
     form,
     submitBtn,
-    feedsBlock,
-    postsBlock,
+    feedsRoot,
+    postsRoot,
   };
 
-  const watchedFormState = genirateFormWatcher(state.formState, elements, i18n);
-  const watchedFeedsState = genirateFeedsWatcher(state.feedsData, elements, i18n);
+  const formState = genirateFormWatcher(state.formState, elements, i18n);
+  const feedsState = genirateFeedsWatcher(state.feedsData, elements, i18n);
 
   rssInput.addEventListener('change', (e) => {
-    watchedFormState.processState = 'filling';
-    watchedFormState.inputValue = e.target.value;
+    formState.processState = 'filling';
+    formState.inputValue = e.target.value;
   });
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    watchedFormState.processState = 'sending';
-    const url = watchedFormState.inputValue;
-    const schema = createRssSchema(watchedFeedsState.urls);
+    formState.processState = 'sending';
+    const url = formState.inputValue;
+    const schema = createRssSchema(feedsState.urls);
 
     schema.validate(url)
       .catch((res) => {
         const errorMessage = i18n.t(res.errors.map((err) => i18n.t(err.key)));
-        watchedFormState.isValid = false;
+        formState.isValid = false;
         throw new Error(errorMessage);
       })
       .then(() => {
-        watchedFormState.isValid = true;
+        formState.isValid = true;
         return downloadRssStream(url, i18n);
       })
       .then((data) => {
-        watchedFeedsState.urls.push(url);
-        watchedFeedsState.feeds.push(data.feed);
-        watchedFeedsState.posts = [...watchedFeedsState.posts, ...data.posts];
-        watchedFormState.errors = [];
-        watchedFormState.processState = 'success';
+        feedsState.urls.push(url);
+        feedsState.feeds.push(data.feed);
+        feedsState.posts = [...feedsState.posts, ...data.posts];
+        formState.errors = [];
+        formState.processState = 'success';
+        formState.inputValue = '';
       })
       .catch((error) => {
-        watchedFormState.errors = error.message;
-        watchedFormState.processState = 'failed';
+        formState.errors = error.message;
+        formState.processState = 'failed';
       });
   });
 

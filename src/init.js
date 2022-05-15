@@ -12,7 +12,6 @@ export default (i18n) => {
       urls: [],
       feeds: [],
       posts: [],
-      checkedPostsId: [],
     },
   };
 

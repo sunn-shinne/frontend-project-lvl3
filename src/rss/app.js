@@ -20,9 +20,15 @@ const createRssSchema = (arr) => string().url().notOneOf(arr).required();
 
 const downloadRssStream = (url, i18n) => axios
   .get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`)
-  .catch(() => { throw new Error(i18n.t('rss_form.error_messages.network_error')); })
   .then((response) => parseRss(response.data.contents))
-  .catch(() => { throw new Error(i18n.t('rss_form.error_messages.not_contain_valid_rss')); });
+  .catch((e) => {
+    switch (e.code) {
+      case 'ERR_NETWORK':
+        throw new Error(i18n.t('rss_form.error_messages.network_error'));
+      default:
+        throw new Error(i18n.t('rss_form.error_messages.not_contain_valid_rss'));
+    }
+  });
 
 const updateRssPosts = (feedsState, i18n) => {
   const { urls } = feedsState;

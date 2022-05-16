@@ -35,31 +35,41 @@ const renderFeeds = (feeds, elements) => {
   container.append(ul);
 };
 
-const createPostItem = (post) => {
-  const li = document.createElement('li');
-  li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
+const createPostItem = (post, checkedPosts, i18n) => {
+  const {
+    id,
+    link,
+    title,
+    description,
+  } = post;
 
   const a = document.createElement('a');
-  a.checked = post.checked;
-  a.classList.add('fw-bold');
-  // a.classList.add('fw-normal', 'link-secondary');
-
-  a.setAttribute('href', post.link);
-  a.setAttribute('data-id', post.id);
-  a.setAttribute('data-bs-toggle', 'modal');
-  a.setAttribute('data-bs-target', 'modal');
-  a.textContent = post.title;
+  const linkClass = checkedPosts.includes(id) ? ['fw-normal', 'link-secondary'] : ['fw-bold'];
+  a.classList.add(...linkClass);
+  a.setAttribute('href', link);
+  a.setAttribute('data-id', id);
+  a.textContent = title;
+  a.setAttribute('target', '_blank');
+  a.addEventListener('click', () => checkedPosts.push(id));
 
   const button = document.createElement('button');
   button.setAttribute('fw-normal', 'link-secondary');
   button.classList.add('btn', 'btn-outline-primary', 'btn-sm');
-  button.textContent = 'Просмотр';
+  button.textContent = i18n.t('post_button');
+  button.dataset.bsToggle = 'modal';
+  button.dataset.bsTarget = '#postModal';
+  button.dataset.bsTitle = title;
+  button.dataset.bsDescription = description;
+  button.dataset.bsLink = link;
+  button.dataset.bsId = id;
 
+  const li = document.createElement('li');
+  li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
   li.append(a, button);
   return li;
 };
 
-const renderPosts = (posts, elements) => {
+const renderPosts = (posts, checkedLinks, elements, i18n) => {
   const { postsRoot } = elements;
 
   if (posts.length === 0) {
@@ -70,19 +80,19 @@ const renderPosts = (posts, elements) => {
   const container = initContainer(postsRoot, 'Посты');
   const ul = document.createElement('ul');
   ul.classList.add('list-group', 'border-0', 'rounded-0');
-  const items = posts.map(createPostItem);
+  const items = posts.map((post) => createPostItem(post, checkedLinks, i18n));
   ul.replaceChildren(...items);
   container.append(ul);
 };
 
-const genirateFeedsWatcher = (feedsData, elements) => (
+const genirateFeedsWatcher = (feedsData, uiState, elements, i18n) => (
   onChange(feedsData, (path, value) => {
     switch (path) {
       case 'feeds':
         renderFeeds(value, elements);
         break;
       case 'posts':
-        renderPosts(value, elements);
+        renderPosts(value, uiState.checkedPosts, elements, i18n);
         break;
       default: break;
     }

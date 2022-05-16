@@ -13,6 +13,9 @@ export default (i18n) => {
       feeds: [],
       posts: [],
     },
+    uiState: {
+      checkedPosts: [],
+    },
   };
 
   app(state, i18n);

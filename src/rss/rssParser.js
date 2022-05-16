@@ -18,8 +18,7 @@ export default (contentStr) => {
     id: _.uniqueId(),
     title: item.querySelector('title').textContent,
     link: item.querySelector('link').textContent,
-    description: item.querySelector('description'),
-    checked: false,
+    description: item.querySelector('description').textContent,
     feedId,
   }));
 

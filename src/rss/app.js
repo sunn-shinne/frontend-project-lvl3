@@ -1,9 +1,10 @@
 import axios from 'axios';
 import _ from 'lodash';
 import { string, setLocale } from 'yup';
-import genirateFormWatcher from './formView.js';
-import genirateFeedsWatcher from './feedsView.js';
-import parseRss from '../utilites/rssParser.js';
+import genirateFormWatcher from './watchers/formWatcher.js';
+import genirateFeedsWatcher from './watchers/feedsWatcher.js';
+import genirateUiStateWatcher from './watchers/uiWatcher.js';
+import parseRss from './rssParser.js';
 
 setLocale({
   mixed: {
@@ -45,6 +46,7 @@ export default (state, i18n) => {
   const submitBtn = document.querySelector('form button');
   const feedsRoot = document.querySelector('.feeds');
   const postsRoot = document.querySelector('.posts');
+  const modal = document.querySelector('#postModal');
   const elements = {
     rssInput,
     feedback,
@@ -54,8 +56,29 @@ export default (state, i18n) => {
     postsRoot,
   };
 
+  const uiState = genirateUiStateWatcher(state.uiState);
   const formState = genirateFormWatcher(state.formState, elements, i18n);
-  const feedsState = genirateFeedsWatcher(state.feedsData, elements, i18n);
+  const feedsState = genirateFeedsWatcher(state.feedsData, uiState, elements, i18n);
+
+  if (modal) {
+    modal.addEventListener('show.bs.modal', (e) => {
+      const button = e.relatedTarget;
+      const title = button.getAttribute('data-bs-title');
+      const description = button.getAttribute('data-bs-description');
+      const link = button.getAttribute('data-bs-link');
+      const id = button.getAttribute('data-bs-id');
+
+      const modalTitle = modal.querySelector('.modal-title');
+      const modalBody = modal.querySelector('.modal-body');
+      const modalFooterLink = modal.querySelector('.modal-footer a');
+
+      modalTitle.textContent = title;
+      modalBody.textContent = description;
+      modalFooterLink.href = link;
+
+      uiState.checkedPosts.push(id);
+    });
+  }
 
   rssInput.addEventListener('change', (e) => {
     formState.processState = 'filling';

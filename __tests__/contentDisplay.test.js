@@ -20,14 +20,14 @@ const i18nextInstance = await i18nextCreateInstance();
 
 nock.disableNetConnect();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
 
 let elements;
 let rssData;
 
 beforeAll(() => {
-  const pathToRssData = path.join(__dirname, '..', '__fixtures__', 'rssDataExample.xml');
+  const pathToRssData = path.join(dirname, '..', '__fixtures__', 'rssDataExample.xml');
   rssData = fs.readFileSync(pathToRssData).toString();
 
   nock('https://allorigins.hexlet.app')
@@ -48,10 +48,10 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
-  const pathToRssData = path.join(__dirname, '..', '__fixtures__', 'rssDataExample.xml');
+  const pathToRssData = path.join(dirname, '..', '__fixtures__', 'rssDataExample.xml');
   rssData = fs.readFileSync(pathToRssData).toString();
 
-  const pathToHtml = path.join(__dirname, '..', '__fixtures__', 'index.html');
+  const pathToHtml = path.join(dirname, '..', '__fixtures__', 'index.html');
   const initHtml = fs.readFileSync(pathToHtml).toString();
   document.body.innerHTML = initHtml;
 
@@ -73,36 +73,28 @@ test('state without any content', async () => {
 test('dysplay content on requests', async () => {
   await user.click(elements.submitBtn);
 
-  await waitFor(() => {
-    expect(elements.feeds).toBeEmptyDOMElement();
-    expect(elements.posts).toBeEmptyDOMElement();
-  });
+  await waitFor(() => expect(elements.feeds).toBeEmptyDOMElement());
+  await waitFor(() => expect(elements.posts).toBeEmptyDOMElement());
 
   await user.type(elements.rssInput, 'Petya');
   await user.click(elements.submitBtn);
 
-  await waitFor(() => {
-    expect(elements.feeds).toBeEmptyDOMElement();
-    expect(elements.posts).toBeEmptyDOMElement();
-  });
+  await waitFor(() => expect(elements.feeds).toBeEmptyDOMElement());
+  await waitFor(() => expect(elements.posts).toBeEmptyDOMElement());
 
   await user.clear(elements.rssInput);
   await user.type(elements.rssInput, 'https://example.com/news');
   await user.click(elements.submitBtn);
 
-  await waitFor(() => {
-    expect(elements.feeds).toBeEmptyDOMElement();
-    expect(elements.posts).toBeEmptyDOMElement();
-  });
+  await waitFor(() => expect(elements.feeds).toBeEmptyDOMElement());
+  await waitFor(() => expect(elements.posts).toBeEmptyDOMElement());
 
   await user.clear(elements.rssInput);
   await user.type(elements.rssInput, 'https://lorem-rss.herokuapp.com/feed');
   await user.click(elements.submitBtn);
 
-  await waitFor(() => {
-    expect(elements.feeds).toHaveTextContent('Фиды');
-    expect(elements.feeds).toContainHTML('<ul class="list-group border-0 rounded-0"/>');
-    expect(elements.posts).toHaveTextContent('Посты');
-    expect(elements.posts).toContainHTML('<ul class="list-group border-0 rounded-0"/>');
-  });
+  await waitFor(() => expect(elements.feeds).toHaveTextContent('Фиды'));
+  await waitFor(() => expect(elements.posts).toHaveTextContent('Посты'));
+  await waitFor(() => expect(elements.feeds).toContainHTML('<ul class="list-group border-0 rounded-0"/>'));
+  await waitFor(() => expect(elements.posts).toContainHTML('<ul class="list-group border-0 rounded-0"/>'));
 });

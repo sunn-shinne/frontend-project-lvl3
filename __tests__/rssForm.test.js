@@ -11,7 +11,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import nock from 'nock';
-import init from '../src/init.js';
+import init from '../src/rss/init.js';
 import i18nextCreateInstance from '../lib/i18next.js';
 
 const { screen, waitFor } = testingLibrary;

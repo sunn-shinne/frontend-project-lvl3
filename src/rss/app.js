@@ -1,4 +1,5 @@
 import axios from 'axios';
+import _ from 'lodash';
 import { string, setLocale } from 'yup';
 import genirateFormWatcher from './formView.js';
 import genirateFeedsWatcher from './feedsView.js';
@@ -21,6 +22,21 @@ const downloadRssStream = (url, i18n) => axios
   .catch(() => { throw new Error(i18n.t('rss_form.error_messages.network_error')); })
   .then((response) => parseRss(response.data.contents))
   .catch(() => { throw new Error(i18n.t('rss_form.error_messages.not_contain_valid_rss')); });
+
+const updateRssPosts = (feedsState, i18n) => {
+  const { urls } = feedsState;
+  if (urls.length === 0) {
+    setTimeout(() => updateRssPosts(feedsState, i18n), 5000);
+    return;
+  }
+  const promises = urls.map((url) => downloadRssStream(url, i18n).then((data) => data.posts));
+  const promise = Promise.all(promises);
+  promise.then((data) => {
+    const newPosts = _.differenceBy(data.flat(), feedsState.posts, 'link');
+    feedsState.posts = [...newPosts, ...feedsState.posts];
+    setTimeout(() => updateRssPosts(feedsState, i18n), 5000);
+  });
+};
 
 export default (state, i18n) => {
   const rssInput = document.querySelector('#rss-input');
@@ -63,9 +79,9 @@ export default (state, i18n) => {
         return downloadRssStream(url, i18n);
       })
       .then((data) => {
-        feedsState.urls.push(url);
-        feedsState.feeds.push(data.feed);
-        feedsState.posts = [...feedsState.posts, ...data.posts];
+        feedsState.urls.unshift(url);
+        feedsState.feeds.unshift(data.feed);
+        feedsState.posts = [...data.posts, ...feedsState.posts];
         formState.errors = [];
         formState.processState = 'success';
         formState.inputValue = '';
@@ -76,6 +92,7 @@ export default (state, i18n) => {
       });
   });
 
+  updateRssPosts(feedsState, i18n);
   rssInput.value = '';
   rssInput.focus();
 };

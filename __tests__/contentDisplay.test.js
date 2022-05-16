@@ -11,7 +11,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import nock from 'nock';
-import init from '../src/init.js';
+import init from '../src/rss/init.js';
 import i18nextCreateInstance from '../lib/i18next.js';
 
 const { screen, waitFor } = testingLibrary;
@@ -101,7 +101,8 @@ test('dysplay content on requests', async () => {
 
   await waitFor(() => {
     expect(elements.feeds).toHaveTextContent('Фиды');
-    expect(elements.feeds).toHaveTextContent('Lorem ipsum feed for an interval of 1 minutes with 10 item(s)');
+    expect(elements.feeds).toContainHTML('<ul class="list-group border-0 rounded-0"/>');
     expect(elements.posts).toHaveTextContent('Посты');
+    expect(elements.posts).toContainHTML('<ul class="list-group border-0 rounded-0"/>');
   });
 });

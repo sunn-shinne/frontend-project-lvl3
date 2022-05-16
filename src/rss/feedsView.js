@@ -16,11 +16,6 @@ const initContainer = (root, title) => {
 const renderFeeds = (feeds, elements) => {
   const { feedsRoot } = elements;
 
-  if (feeds.length === 0) {
-    feedsRoot.innerHTML = '';
-    return;
-  }
-
   const container = initContainer(feedsRoot, 'Фиды');
   const ul = document.createElement('ul');
   ul.classList.add('list-group', 'border-0', 'rounded-0');

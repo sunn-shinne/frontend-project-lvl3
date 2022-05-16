@@ -1,4 +1,4 @@
-import rssForm from './rssForm/rssForm.js';
+import app from './app.js';
 
 export default (i18n) => {
   const state = {
@@ -15,5 +15,5 @@ export default (i18n) => {
     },
   };
 
-  rssForm(state, i18n);
+  app(state, i18n);
 };
